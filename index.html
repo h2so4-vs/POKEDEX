@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+    <style>
+        *{
+            box-sizing: border-box;
+            margin: 0%;
+            padding: 0%;
+        }
+        .left_pane{
+            border: 2px solid black;
+            height: 100vh;
+            width: 50vw;   
+            display: grid;
+            grid-template-rows: repeat(3 , 1fr 0.3fr);
+            background-color: rgb(189, 23, 23);
+        } 
+        .right_pane{
+            border: 2px solid black;
+            height: 100vh;
+            width: 50vw;  
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            background-color: rgb(189, 23, 23);
+        }
+        body{
+            display: flex;
+        }
+        .idk{
+            border: 1px solid black;
+            height: 10vh;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4 , 1fr);
+            align-items: center;
+        }
+        .circle{
+            border: 2px solid green;
+            height: 50px;
+            width: 50px;
+            border-radius: 100px;
+            grid-column: 1/2;
+            margin: 5px;
+            margin-left: 30px;
+            background-color: rgb(22, 162, 22);
+        }
+        #pokemon{
+            grid-column: 3/5;
+            height: 50%;
+            margin-right: 30px;
+            border-radius: 50px;
+            padding: 5px;
+        }
+        .img{
+            border: 2px solid black;
+            height: 100%;
+            width: 50%;
+            grid-row: 2/5;
+            justify-self: center;
+            text-align: center;
+            background-color: aliceblue;
+        }
+        #text{
+            grid-row: 5/6;
+            justify-self: center;
+            align-self: center;
+            font-size: 50px;
+        }
+        p{
+            font-size: 50px;
+        }
+        #cry{
+            height: 40px;
+            width: 100px;
+            border:2px solid brown ;
+            background-color: rgb(182, 51, 51);
+            border-radius: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="left_pane">
+
+        <div class="idk">
+            <div class="circle"></div>
+            <input type="text" name="pokemon" id="pokemon">
+        </div>
+
+        <div class="img">
+        </div>
+        <p id="text"> </p>
+    </div>
+    <div class="right_pane">
+        <p id="name">Name :</p>
+        <p id="type">Type :</p>
+        <div class="cry">
+            <input type="button" value="CRY" id="cry">
+        </div>
+    </div>
+</body>
+<script>
+//https://pokeapi.co/api/v2/pokemon/mewtwo
+
+let pokename;
+let cri;
+
+document.addEventListener(`keydown` , function(e){
+    if(e.key == `Enter`){
+    if(document.querySelector(`#pokemon`).value == ``){
+        document.querySelector(`h1`).textContent = `Please enter a name.`
+    }else{
+        pokename = document.querySelector(`#pokemon`).value
+        console.log(pokename)
+        fetch(`https://pokeapi.co/api/v2/pokemon/` + pokename)
+        .then(jdata => { 
+            if(jdata.ok){
+                return jdata.json()
+            }else{
+                throw new Error(`its not a pokemon`)
+            }
+            
+        }).then(data => {
+            document.querySelector(`p`).textContent = ``
+            document.querySelector(`.img`).style.backgroundImage = `url(${data.sprites.front_default})`
+            document.querySelector(`.img`).style.backgroundPosition = `center`
+            document.querySelector(`.img`).style.backgroundRepeat = `no-repeat`
+            document.querySelector(`.img`).style.backgroundSize = `cover`
+
+            document.querySelector(`#name`).textContent = `NAME : ${data.name}`
+            document.querySelector(`#type`).textContent = `TYPE : ${(data.types.map(item => item.type.name)).join(` , `)}`
+
+            cri = new Audio(data.cries.latest)
+
+            document.getElementById(`cry`).disabled = false
+        })
+        .catch(error => {
+               console.log(document.querySelectorAll(`p`).forEach((itm)=>{itm.textContent = ``}))
+                document.getElementById(`cry`).disabled = true
+               document.querySelector(`p`).textContent = `Not a Pokemon`
+               document.querySelector(`.img`).style.backgroundImage = ``
+        })
+    }}
+})
+
+document.querySelector(`#cry`).addEventListener(`click` , function(){
+        cri.play()
+    }
+)
+
+
+</script>
+</html>
